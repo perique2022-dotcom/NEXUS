@@ -1,0 +1,26 @@
+{
+  "id": "./",
+  "name": "NEXUS — Sistema Pessoal",
+  "short_name": "NEXUS",
+  "description": "Seu espaço pessoal de organização, rotina e projetos.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#101510",
+  "theme_color": "#101510",
+  "icons": [
+    {
+      "src": "./icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
