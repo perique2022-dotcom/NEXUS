@@ -5,6 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#101411">
   <title>NEXUS — Seu espaço pessoal</title>
+  <link rel="manifest" href="./manifest.webmanifest">
+  <meta name="theme-color" content="#0c100e">
+  <meta name="application-name" content="NEXUS">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="NEXUS">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="apple-touch-icon" href="./icons/icon-192.png">
+
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
     :root{--bg:#0c100e;--panel:#131a16;--panel2:#19221d;--line:#26332b;--text:#edf5ef;--muted:#91a197;--green:#70df91;--green2:#2e9d58;--red:#ff7777;--yellow:#f0c76a;--radius:18px}
@@ -33,9 +41,32 @@
     .two-col{display:grid;grid-template-columns:1fr 1fr;gap:15px}.footer-note{color:#65756b;font-size:10px;margin-top:25px;text-align:center}
     @media(max-width:900px){.app{grid-template-columns:1fr}aside{height:auto;position:relative;padding:13px;border-right:0;border-bottom:1px solid var(--line)}.brand{padding:0 8px 12px}.nav-label,.side-bottom{display:none}nav{display:flex;overflow-x:auto;padding-bottom:2px}.nav-btn{white-space:nowrap;padding:9px 11px}.nav-btn span{width:auto}.stats{grid-template-columns:repeat(2,1fr)}main{padding:24px 16px}.dashboard-grid,.two-col{grid-template-columns:1fr}}
     @media(max-width:480px){.topbar{align-items:flex-start}.top-actions .btn{padding:9px}.date{max-width:130px;line-height:1.5}.stat{padding:15px}.stat strong{font-size:24px}.form-row{grid-template-columns:1fr}.day{min-height:58px;padding:5px;font-size:10px}}
+
+    .auth-overlay{position:fixed;inset:0;z-index:9999;background:rgba(5,10,7,.96);display:grid;place-items:center;padding:20px;backdrop-filter:blur(12px)}
+    .auth-box{width:min(100%,430px);background:#131a16;border:1px solid #2a3b30;border-radius:22px;padding:28px;box-shadow:0 25px 80px #0008}
+    .auth-logo{display:flex;align-items:center;gap:12px;margin-bottom:22px}.auth-logo .logo{width:44px;height:44px}.auth-box h2{margin:0 0 7px;font-size:23px}.auth-box p{color:var(--muted);font-size:12px;line-height:1.6;margin:0 0 20px}.auth-tabs{display:flex;gap:8px;margin-bottom:16px}.auth-tabs button{flex:1}.auth-message{font-size:12px;line-height:1.5;margin-top:13px;color:var(--green);min-height:18px}.auth-user{font-size:11px;color:var(--muted);max-width:190px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.auth-hidden{display:none!important}
+
   </style>
 </head>
 <body>
+
+<div class="auth-overlay" id="authOverlay">
+  <div class="auth-box">
+    <div class="auth-logo"><div class="logo">N</div><div><strong style="letter-spacing:2px">NEXUS</strong><small style="display:block;color:var(--muted);font-size:10px;letter-spacing:1.4px;margin-top:3px">SUA CONTA PESSOAL</small></div></div>
+    <h2 id="authTitle">Entre na sua conta</h2>
+    <p id="authDescription">Acesse suas tarefas, hábitos, estudos e projetos de qualquer dispositivo.</p>
+    <div class="auth-tabs"><button class="btn primary" id="showLogin" type="button">Entrar</button><button class="btn" id="showSignup" type="button">Criar conta</button></div>
+    <form id="authForm" class="form-stack">
+      <input class="field auth-hidden" id="authName" type="text" placeholder="Seu nome" autocomplete="name">
+      <input class="field" id="authEmail" type="email" placeholder="Seu e-mail" autocomplete="email" required>
+      <input class="field" id="authPassword" type="password" placeholder="Sua senha" autocomplete="current-password" minlength="6" required>
+      <button class="btn primary" id="authSubmit" type="submit">Entrar</button>
+    </form>
+    <button class="btn" id="forgotPassword" type="button" style="width:100%;margin-top:10px">Esqueci minha senha</button>
+    <div class="auth-message" id="authMessage" role="status"></div>
+  </div>
+</div>
+
 <div class="app">
   <aside>
     <div class="brand"><div class="logo">N</div><div><strong>NEXUS</strong><small>PERSONAL WORKSPACE</small></div></div>
@@ -56,7 +87,7 @@
   <main>
     <div class="topbar">
       <div><div class="eyebrow">SEU PAINEL PESSOAL</div><div class="date" id="todayText"></div></div>
-      <div class="top-actions"><button class="btn" onclick="exportData()">↧ Exportar dados</button></div>
+      <div class="top-actions"><span class="auth-user" id="accountEmail"></span><button class="btn" id="signOutBtn" type="button">Sair</button><button class="btn" onclick="exportData()">↧ Exportar dados</button></div>
     </div>
 
     <section class="view active" id="view-inicio">
@@ -122,7 +153,7 @@
       <div class="card form-card"><h3>Nova anotação</h3><form id="noteForm" class="form-stack"><input class="field" id="noteTitle" placeholder="Título" required><textarea class="field" id="noteContent" placeholder="Escreva sua anotação..." required></textarea><button class="btn primary">＋ Salvar nota</button></form></div>
       <div class="note-list" id="allNotes"></div>
     </section>
-    <div class="footer-note">NEXUS • Seus dados ficam salvos neste navegador neste dispositivo.</div>
+    <div class="footer-note">NEXUS • Seus dados são sincronizados na sua conta quando você está conectado.</div>
   </main>
 </div>
 <script>
@@ -130,7 +161,7 @@ const $ = id => document.getElementById(id);
 const today = () => new Date().toISOString().slice(0,10);
 const load = (key, fallback=[]) => {try{return JSON.parse(localStorage.getItem('nexus_'+key)) ?? fallback}catch{return fallback}};
 const state = {tasks:load('tasks'),habits:load('habits'),studies:load('studies'),workouts:load('workouts'),finance:load('finance'),projects:load('projects'),notes:load('notes')};
-function save(){Object.entries(state).forEach(([k,v])=>localStorage.setItem('nexus_'+k,JSON.stringify(v)));renderAll()}
+function save(){Object.entries(state).forEach(([k,v])=>localStorage.setItem('nexus_'+k,JSON.stringify(v)));renderAll();if(window.nexusCloudSave)window.nexusCloudSave(state)}
 function id(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7)}
 function esc(s=''){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function money(n){return Number(n||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'})}
@@ -178,5 +209,97 @@ function renderAll(){
 function exportData(){const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='nexus-backup.json';a.click();URL.revokeObjectURL(a.href)}
 renderAll();
 </script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(() => {
+  const PROJECT_URL = 'https://lcpzngsivxvpymwllzsp.supabase.co';
+  const PUBLISHABLE_KEY = 'sb_publishable_rDUNSidLT4UbXnLRji5M7Q_iybIQm3i';
+  const client = window.supabase.createClient(PROJECT_URL, PUBLISHABLE_KEY, {
+    auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
+  });
+  const $id = (id) => document.getElementById(id);
+  const overlay = $id('authOverlay'), form = $id('authForm'), message = $id('authMessage');
+  let mode = 'login', currentUser = null, saveTimer = null, loadingCloud = false;
+  const keys = ['tasks','habits','studies','workouts','finance','projects','notes'];
+  const blank = () => ({tasks:[],habits:[],studies:[],workouts:[],finance:[],projects:[],notes:[]});
+  const localSnapshot = () => Object.fromEntries(keys.map(k => {try{return [k,JSON.parse(localStorage.getItem('nexus_'+k)||'[]')]}catch{return [k,[]]}}));
+  const hasLocalData = (d) => keys.some(k => Array.isArray(d[k]) && d[k].length > 0);
+  const setLocal = (d) => keys.forEach(k => localStorage.setItem('nexus_'+k,JSON.stringify(Array.isArray(d[k])?d[k]:[])));
+  const setMessage = (t, bad=false) => {message.textContent=t;message.style.color=bad?'#ff9999':'var(--green)'};
+  const showAuth = () => {overlay.classList.remove('auth-hidden');$id('signOutBtn').classList.add('auth-hidden');$id('accountEmail').textContent=''};
+  const hideAuth = () => {overlay.classList.add('auth-hidden');$id('signOutBtn').classList.remove('auth-hidden')};
+  function setMode(next){mode=next;const signup=mode==='signup';$id('authTitle').textContent=signup?'Criar sua conta':'Entre na sua conta';$id('authDescription').textContent=signup?'Crie sua conta para manter seus dados sincronizados.':'Acesse suas tarefas, hábitos, estudos e projetos de qualquer dispositivo.';$id('authName').classList.toggle('auth-hidden',!signup);$id('authName').required=signup;$id('authPassword').autocomplete=signup?'new-password':'current-password';$id('authSubmit').textContent=signup?'Criar conta':'Entrar';$id('showLogin').classList.toggle('primary',!signup);$id('showSignup').classList.toggle('primary',signup);$id('forgotPassword').classList.toggle('auth-hidden',signup);setMessage('')}
+  async function loadAccount(user){
+    loadingCloud=true;
+    const {data,error}=await client.from('nexus_data').select('data').eq('user_id',user.id).maybeSingle();
+    if(error){loadingCloud=false;throw error}
+    if(data && data.data){setLocal(data.data);Object.assign(state,data.data);}
+    else {
+      const local=localSnapshot();
+      if(hasLocalData(local) && confirm('Encontramos dados salvos neste navegador. Deseja importar esses dados para sua nova conta NEXUS?\n\nClique em OK para importar ou Cancelar para começar vazio.')){
+        Object.assign(state,local);setLocal(local);
+      } else {Object.assign(state,blank());setLocal(state)}
+      const {error:insertError}=await client.from('nexus_data').insert({user_id:user.id,data:state});
+      if(insertError) throw insertError;
+    }
+    renderAll();loadingCloud=false;
+  }
+  window.nexusCloudSave = (data) => {
+    if(!currentUser || loadingCloud) return;
+    clearTimeout(saveTimer);
+    saveTimer=setTimeout(async()=>{
+      const {error}=await client.from('nexus_data').upsert({user_id:currentUser.id,data:data,updated_at:new Date().toISOString()},{onConflict:'user_id'});
+      if(error) console.error('Falha ao sincronizar NEXUS:',error);
+    },700);
+  };
+  async function activateSession(session){
+    if(!session){currentUser=null;showAuth();return}
+    currentUser=session.user;
+    try{await loadAccount(currentUser);$id('accountEmail').textContent=currentUser.email||'Conta conectada';hideAuth();}
+    catch(e){console.error(e);showAuth();setMessage('Não foi possível carregar seus dados: '+(e.message||'erro de conexão'),true)}
+  }
+  $id('showLogin').addEventListener('click',()=>setMode('login'));
+  $id('showSignup').addEventListener('click',()=>setMode('signup'));
+  form.addEventListener('submit',async(e)=>{
+    e.preventDefault();$id('authSubmit').disabled=true;setMessage('Aguarde...');
+    const email=$id('authEmail').value.trim(),password=$id('authPassword').value;
+    try{
+      if(mode==='signup'){
+        const name=$id('authName').value.trim();
+        const {data,error}=await client.auth.signUp({email,password,options:{data:{display_name:name},emailRedirectTo:location.origin+location.pathname}});
+        if(error) throw error;
+        if(data.session) await activateSession(data.session); else setMessage('Cadastro criado! Confira seu e-mail e clique no link de confirmação para ativar sua conta.');
+      } else {
+        const {data,error}=await client.auth.signInWithPassword({email,password});
+        if(error) throw error;
+        await activateSession(data.session);
+      }
+    }catch(err){setMessage(err.message||'Não foi possível concluir. Tente novamente.',true)}
+    finally{$id('authSubmit').disabled=false}
+  });
+  $id('forgotPassword').addEventListener('click',async()=>{
+    const email=$id('authEmail').value.trim();
+    if(!email){setMessage('Digite seu e-mail primeiro.',true);return}
+    const {error}=await client.auth.resetPasswordForEmail(email,{redirectTo:location.origin+location.pathname});
+    setMessage(error?error.message:'Se o endereço estiver cadastrado, você receberá um e-mail para redefinir a senha.',!!error);
+  });
+  $id('signOutBtn').addEventListener('click',async()=>{if(confirm('Deseja sair da sua conta?')){await client.auth.signOut();location.reload()}});
+  client.auth.onAuthStateChange((event,session)=>{if(event==='SIGNED_IN'||event==='INITIAL_SESSION'||event==='PASSWORD_RECOVERY')activateSession(session)});
+  setMode('login');
+})();
+</script>
+
+<script>
+  // Registra o modo PWA para permitir instalação e cache básico.
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("./service-worker.js", { scope: "./" })
+        .catch((error) => console.error("Não foi possível ativar o modo offline do NEXUS:", error));
+    });
+  }
+</script>
+
 </body>
 </html>
