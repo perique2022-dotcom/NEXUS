@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#101411">
+  <title>NEXUS — Seu espaço pessoal</title>
+  <link rel="manifest" href="./manifest.webmanifest">
+  <meta name="theme-color" content="#0c100e">
+  <meta name="application-name" content="NEXUS">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="NEXUS">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="apple-touch-icon" href="./icons/icon-192.png">
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+    :root{--bg:#0c100e;--panel:#131a16;--panel2:#19221d;--line:#26332b;--text:#edf5ef;--muted:#91a197;--green:#70df91;--green2:#2e9d58;--red:#ff7777;--yellow:#f0c76a;--radius:18px}
+    *{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 80% -10%,#1c3325 0,transparent 35%),var(--bg);color:var(--text);font-family:Inter,system-ui,sans-serif;min-height:100vh}
+    button,input,textarea,select{font:inherit}button{cursor:pointer}
+    .app{display:grid;grid-template-columns:245px 1fr;min-height:100vh}
+    aside{border-right:1px solid var(--line);padding:26px 16px;background:#0e1411;position:sticky;top:0;height:100vh}
+    .brand{display:flex;align-items:center;gap:11px;padding:0 10px 30px}.logo{width:39px;height:39px;border-radius:13px;background:linear-gradient(135deg,#a4f5b7,#269e55);display:grid;place-items:center;color:#0b1a10;font-weight:900;font-size:21px}.brand strong{font-size:19px;letter-spacing:2px}.brand small{display:block;color:var(--muted);font-size:10px;letter-spacing:1.6px;margin-top:3px}
+    .nav-label{font-size:10px;color:#65756b;text-transform:uppercase;letter-spacing:1.5px;padding:10px 12px}
+    nav{display:grid;gap:5px}.nav-btn{border:0;background:transparent;color:#a9b7ae;text-align:left;padding:12px;border-radius:11px;display:flex;align-items:center;gap:12px;font-size:13px;font-weight:600}.nav-btn:hover,.nav-btn.active{background:#1b2920;color:var(--green)}.nav-btn span{width:20px;text-align:center;font-size:16px}
+    .side-bottom{position:absolute;bottom:22px;left:25px;right:25px;color:#718077;font-size:11px;line-height:1.6}
+    main{padding:34px clamp(18px,4vw,55px);max-width:1500px;width:100%;margin:auto}
+    .topbar{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:30px}.eyebrow{color:var(--green);font-size:11px;font-weight:700;letter-spacing:1.6px;text-transform:uppercase}.date{color:var(--muted);font-size:12px}.top-actions{display:flex;gap:9px;align-items:center}
+    h1{font-size:clamp(26px,4vw,36px);margin:8px 0 7px;letter-spacing:-1.4px}.sub{color:var(--muted);font-size:13px;margin:0}
+    .btn{border:1px solid var(--line);background:var(--panel2);color:var(--text);padding:10px 14px;border-radius:11px;font-size:12px;font-weight:700}.btn.primary{background:var(--green);border-color:var(--green);color:#092011}.btn:hover{filter:brightness(1.1)}
+    .view{display:none}.view.active{display:block}
+    .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin:26px 0}.stat,.card{background:linear-gradient(145deg,#17211b,#121915);border:1px solid var(--line);border-radius:var(--radius);padding:19px}.stat-top{display:flex;justify-content:space-between;color:var(--muted);font-size:11px}.stat-icon{font-size:17px}.stat strong{display:block;font-size:28px;margin:14px 0 4px}.stat small{font-size:11px;color:var(--muted)}
+    .dashboard-grid{display:grid;grid-template-columns:1.35fr 1fr;gap:15px}.card-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:17px}.card h3{font-size:14px;margin:0}.muted{color:var(--muted);font-size:11px}
+    .task-list,.habit-list,.entry-list,.project-list,.note-list{display:grid;gap:9px}.task,.habit,.entry,.project,.note{background:#101713;border:1px solid #233027;border-radius:12px;padding:12px;display:flex;align-items:center;gap:10px}.task.done .task-name{text-decoration:line-through;color:#728078}.task-name{font-size:12px;flex:1}.task small{color:var(--muted);font-size:10px}.check{appearance:none;width:17px;height:17px;border:1px solid #607469;border-radius:5px;flex-shrink:0;cursor:pointer}.check:checked{background:var(--green);border-color:var(--green)}.check:checked:after{content:'✓';display:block;color:#092011;text-align:center;font-weight:900;font-size:12px;line-height:15px}
+    .habit{justify-content:space-between}.habit-name{font-size:12px;flex:1}.habit button{border:1px solid var(--line);background:#1a2920;color:var(--green);border-radius:8px;padding:7px 10px;font-size:11px}
+    .progress{height:7px;background:#26342b;border-radius:9px;overflow:hidden;margin-top:13px}.progress span{height:100%;display:block;background:linear-gradient(90deg,#38a963,#8aefa4);border-radius:9px}
+    .section-title{margin:8px 0 20px}.section-title h1{margin-bottom:6px}.toolbar{display:flex;gap:9px;flex-wrap:wrap;margin:18px 0}.field{background:#101713;border:1px solid var(--line);border-radius:10px;padding:11px 12px;color:var(--text);outline:none;width:100%;font-size:12px}.field:focus{border-color:var(--green2)}.field::placeholder{color:#65756b}textarea.field{resize:vertical;min-height:90px}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.form-stack{display:grid;gap:10px}.form-card{max-width:650px;margin-bottom:18px}.form-card h3{margin:0 0 15px;font-size:14px}.entry{justify-content:space-between}.entry-main{display:grid;gap:4px;min-width:0}.entry-main strong{font-size:12px}.entry-main small{font-size:10px;color:var(--muted)}.amount{font-weight:700;font-size:13px}.positive{color:var(--green)}.negative{color:var(--red)}.delete{border:0;background:transparent;color:#819087;font-size:17px;padding:4px 7px}.delete:hover{color:var(--red)}
+    .calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:7px}.day-label{text-align:center;color:var(--muted);font-size:10px;padding:8px 0}.day{min-height:75px;border:1px solid var(--line);background:#111813;border-radius:10px;padding:8px;font-size:11px;color:var(--muted)}.day.today{border-color:var(--green);color:var(--green)}.day.empty{opacity:.25}.calendar-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}.calendar-head strong{font-size:14px}
+    .empty-state{color:var(--muted);font-size:12px;text-align:center;padding:24px 8px}.tag{font-size:9px;color:var(--green);background:#1b3022;padding:4px 7px;border-radius:20px}
+    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:15px}.footer-note{color:#65756b;font-size:10px;margin-top:25px;text-align:center}
+    @media(max-width:900px){.app{grid-template-columns:1fr}aside{height:auto;position:relative;padding:13px;border-right:0;border-bottom:1px solid var(--line)}.brand{padding:0 8px 12px}.nav-label,.side-bottom{display:none}nav{display:flex;overflow-x:auto;padding-bottom:2px}.nav-btn{white-space:nowrap;padding:9px 11px}.nav-btn span{width:auto}.stats{grid-template-columns:repeat(2,1fr)}main{padding:24px 16px}.dashboard-grid,.two-col{grid-template-columns:1fr}}
+    @media(max-width:480px){.topbar{align-items:flex-start}.top-actions .btn{padding:9px}.date{max-width:130px;line-height:1.5}.stat{padding:15px}.stat strong{font-size:24px}.form-row{grid-template-columns:1fr}.day{min-height:58px;padding:5px;font-size:10px}}
+
+    .auth-overlay{position:fixed;inset:0;z-index:9999;background:rgba(5,10,7,.96);display:grid;place-items:center;padding:20px;backdrop-filter:blur(12px)}
+    .auth-box{width:min(100%,430px);background:#131a16;border:1px solid #2a3b30;border-radius:22px;padding:28px;box-shadow:0 25px 80px #0008}
+    .auth-logo{display:flex;align-items:center;gap:12px;margin-bottom:22px}.auth-logo .logo{width:44px;height:44px}.auth-box h2{margin:0 0 7px;font-size:23px}.auth-box p{color:var(--muted);font-size:12px;line-height:1.6;margin:0 0 20px}.auth-tabs{display:flex;gap:8px;margin-bottom:16px}.auth-tabs button{flex:1}.auth-message{font-size:12px;line-height:1.5;margin-top:13px;color:var(--green);min-height:18px}.auth-user{font-size:11px;color:var(--muted);max-width:190px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.auth-hidden{display:none!important}
+
+  </style>
+</head>
+<body>
+
+<div class="auth-overlay" id="authOverlay">
+  <div class="auth-box">
+    <div class="auth-logo"><div class="logo">N</div><div><strong style="letter-spacing:2px">NEXUS</strong><small style="display:block;color:var(--muted);font-size:10px;letter-spacing:1.4px;margin-top:3px">SUA CONTA PESSOAL</small></div></div>
+    <h2 id="authTitle">Entre na sua conta</h2>
+    <p id="authDescription">Acesse suas tarefas, hábitos, estudos e projetos de qualquer dispositivo.</p>
+    <div class="auth-tabs"><button class="btn primary" id="showLogin" type="button">Entrar</button><button class="btn" id="showSignup" type="button">Criar conta</button></div>
+    <form id="authForm" class="form-stack">
+      <input class="field auth-hidden" id="authName" type="text" placeholder="Seu nome" autocomplete="name">
+      <input class="field" id="authEmail" type="email" placeholder="Seu e-mail" autocomplete="email" required>
+      <input class="field" id="authPassword" type="password" placeholder="Sua senha" autocomplete="current-password" minlength="6" required>
+      <button class="btn primary" id="authSubmit" type="submit">Entrar</button>
+    </form>
+    <button class="btn" id="forgotPassword" type="button" style="width:100%;margin-top:10px">Esqueci minha senha</button>
+    <div class="auth-message" id="authMessage" role="status"></div>
+  </div>
+</div>
+
+<div class="app">
+  <aside>
+    <div class="brand"><div class="logo">N</div><div><strong>NEXUS</strong><small>PERSONAL WORKSPACE</small></div></div>
+    <div class="nav-label">Workspace</div>
+    <nav id="nav">
+      <button class="nav-btn active" data-view="inicio"><span>⌂</span>Visão geral</button>
+      <button class="nav-btn" data-view="tarefas"><span>☑</span>Tarefas</button>
+      <button class="nav-btn" data-view="calendario"><span>▦</span>Calendário</button>
+      <button class="nav-btn" data-view="habitos"><span>↗</span>Hábitos</button>
+      <button class="nav-btn" data-view="estudos"><span>▤</span>Estudos</button>
+      <button class="nav-btn" data-view="fitness"><span>✳</span>Fitness</button>
+      <button class="nav-btn" data-view="financas"><span>＄</span>Finanças</button>
+      <button class="nav-btn" data-view="projetos"><span>◇</span>Projetos</button>
+      <button class="nav-btn" data-view="notas"><span>▧</span>Notas</button>
+    </nav>
+    <div class="side-bottom">NEXUS v1.0<br>Seu espaço. Seu ritmo.</div>
+  </aside>
+  <main>
+    <div class="topbar">
+      <div><div class="eyebrow">SEU PAINEL PESSOAL</div><div class="date" id="todayText"></div></div>
+      <div class="top-actions"><span class="auth-user" id="accountEmail"></span><button class="btn" id="signOutBtn" type="button">Sair</button><button class="btn" onclick="exportData()">↧ Exportar dados</button></div>
+    </div>
+
+    <section class="view active" id="view-inicio">
+      <h1>Bom te ver por aqui.</h1><p class="sub">Organize suas ideias, acompanhe seus objetivos e avance um dia de cada vez.</p>
+      <div class="stats">
+        <div class="stat"><div class="stat-top">Tarefas pendentes <span class="stat-icon">☑</span></div><strong id="statTasks">0</strong><small>Para concluir</small></div>
+        <div class="stat"><div class="stat-top">Hábitos de hoje <span class="stat-icon">↗</span></div><strong id="statHabits">0/0</strong><small>Concluídos</small></div>
+        <div class="stat"><div class="stat-top">Projetos ativos <span class="stat-icon">◇</span></div><strong id="statProjects">0</strong><small>Em andamento</small></div>
+        <div class="stat"><div class="stat-top">Saldo registrado <span class="stat-icon">＄</span></div><strong id="statBalance">R$ 0</strong><small>Entradas menos saídas</small></div>
+      </div>
+      <div class="dashboard-grid">
+        <div class="card"><div class="card-head"><h3>Prioridades</h3><button class="btn" onclick="showView('tarefas')">Ver tarefas →</button></div><div class="task-list" id="dashboardTasks"></div></div>
+        <div class="card"><div class="card-head"><h3>Hábitos de hoje</h3><button class="btn" onclick="showView('habitos')">Ver hábitos →</button></div><div class="habit-list" id="dashboardHabits"></div><div class="progress"><span id="habitProgress" style="width:0%"></span></div></div>
+        <div class="card"><div class="card-head"><h3>Projetos em andamento</h3><button class="btn" onclick="showView('projetos')">Ver projetos →</button></div><div class="project-list" id="dashboardProjects"></div></div>
+        <div class="card"><div class="card-head"><h3>Últimas anotações</h3><button class="btn" onclick="showView('notas')">Ver notas →</button></div><div class="note-list" id="dashboardNotes"></div></div>
+      </div>
+    </section>
+
+    <section class="view" id="view-tarefas">
+      <div class="section-title"><h1>Tarefas</h1><p class="sub">Tire as ideias da cabeça e coloque em movimento.</p></div>
+      <div class="card form-card"><h3>Adicionar tarefa</h3><form id="taskForm" class="form-stack"><input class="field" id="taskTitle" placeholder="O que precisa ser feito?" required><div class="form-row"><input class="field" id="taskDate" type="date"><select class="field" id="taskPriority"><option value="Normal">Prioridade normal</option><option value="Alta">Prioridade alta</option><option value="Baixa">Prioridade baixa</option></select></div><button class="btn primary">＋ Adicionar tarefa</button></form></div>
+      <div class="card"><div class="card-head"><h3>Minha lista</h3><span class="muted" id="taskCount"></span></div><div class="task-list" id="allTasks"></div></div>
+    </section>
+
+    <section class="view" id="view-calendario">
+      <div class="section-title"><h1>Calendário</h1><p class="sub">Uma visão simples dos seus dias e compromissos.</p></div>
+      <div class="card"><div class="calendar-head"><button class="btn" onclick="changeMonth(-1)">←</button><strong id="monthLabel"></strong><button class="btn" onclick="changeMonth(1)">→</button></div><div class="calendar" id="calendarGrid"></div><p class="muted">As datas das suas tarefas aparecem marcadas no calendário.</p></div>
+    </section>
+
+    <section class="view" id="view-habitos">
+      <div class="section-title"><h1>Hábitos</h1><p class="sub">Pequenas ações consistentes fazem diferença.</p></div>
+      <div class="card form-card"><h3>Novo hábito</h3><form id="habitForm" class="form-stack"><input class="field" id="habitTitle" placeholder="Ex.: Ler 15 minutos" required><button class="btn primary">＋ Criar hábito</button></form></div>
+      <div class="card"><div class="card-head"><h3>Meus hábitos</h3><span class="muted">Marque quando concluir</span></div><div class="habit-list" id="allHabits"></div></div>
+    </section>
+
+    <section class="view" id="view-estudos">
+      <div class="section-title"><h1>Estudos</h1><p class="sub">Organize matérias, revisões e o que precisa aprender.</p></div>
+      <div class="card form-card"><h3>Registrar estudo</h3><form id="studyForm" class="form-stack"><input class="field" id="studySubject" placeholder="Matéria ou assunto" required><div class="form-row"><input class="field" id="studyDuration" type="number" min="1" placeholder="Tempo em minutos"><input class="field" id="studyDate" type="date"></div><textarea class="field" id="studyNotes" placeholder="O que você estudou? (opcional)"></textarea><button class="btn primary">＋ Salvar registro</button></form></div>
+      <div class="card"><div class="card-head"><h3>Histórico de estudos</h3></div><div class="entry-list" id="studyList"></div></div>
+    </section>
+
+    <section class="view" id="view-fitness">
+      <div class="section-title"><h1>Fitness</h1><p class="sub">Registre seus treinos e acompanhe sua consistência.</p></div>
+      <div class="card form-card"><h3>Registrar atividade</h3><form id="workoutForm" class="form-stack"><input class="field" id="workoutName" placeholder="Ex.: Treino de membros inferiores" required><div class="form-row"><input class="field" id="workoutDuration" type="number" min="1" placeholder="Duração em minutos"><input class="field" id="workoutDate" type="date"></div><textarea class="field" id="workoutNotes" placeholder="Exercícios ou observações (opcional)"></textarea><button class="btn primary">＋ Salvar treino</button></form></div>
+      <div class="card"><div class="card-head"><h3>Histórico de atividades</h3></div><div class="entry-list" id="workoutList"></div></div>
+    </section>
+
+    <section class="view" id="view-financas">
+      <div class="section-title"><h1>Finanças</h1><p class="sub">Tenha uma visão simples do dinheiro que entra e sai.</p></div>
+      <div class="stats"><div class="stat"><div class="stat-top">Saldo</div><strong id="financeBalance">R$ 0</strong></div><div class="stat"><div class="stat-top">Entradas</div><strong class="positive" id="financeIn">R$ 0</strong></div><div class="stat"><div class="stat-top">Saídas</div><strong class="negative" id="financeOut">R$ 0</strong></div><div class="stat"><div class="stat-top">Registros</div><strong id="financeCount">0</strong></div></div>
+      <div class="card form-card"><h3>Novo registro</h3><form id="financeForm" class="form-stack"><input class="field" id="financeTitle" placeholder="Descrição" required><div class="form-row"><input class="field" id="financeAmount" type="number" min="0.01" step="0.01" placeholder="Valor (R$)" required><select class="field" id="financeType"><option value="in">Entrada</option><option value="out">Saída</option></select></div><button class="btn primary">＋ Registrar</button></form></div>
+      <div class="card"><div class="card-head"><h3>Movimentações</h3></div><div class="entry-list" id="financeList"></div></div>
+    </section>
+
+    <section class="view" id="view-projetos">
+      <div class="section-title"><h1>Projetos</h1><p class="sub">Acompanhe suas ideias e planos em construção.</p></div>
+      <div class="card form-card"><h3>Novo projeto</h3><form id="projectForm" class="form-stack"><input class="field" id="projectTitle" placeholder="Nome do projeto" required><textarea class="field" id="projectDescription" placeholder="Descrição ou próximo passo"></textarea><button class="btn primary">＋ Criar projeto</button></form></div>
+      <div class="card"><div class="card-head"><h3>Meus projetos</h3></div><div class="project-list" id="allProjects"></div></div>
+    </section>
+
+    <section class="view" id="view-notas">
+      <div class="section-title"><h1>Notas</h1><p class="sub">Guarde ideias, lembretes e pensamentos.</p></div>
+      <div class="card form-card"><h3>Nova anotação</h3><form id="noteForm" class="form-stack"><input class="field" id="noteTitle" placeholder="Título" required><textarea class="field" id="noteContent" placeholder="Escreva sua anotação..." required></textarea><button class="btn primary">＋ Salvar nota</button></form></div>
+      <div class="note-list" id="allNotes"></div>
+    </section>
+    <div class="footer-note">NEXUS • Seus dados são sincronizados na sua conta quando você está conectado.</div>
+  </main>
+</div>
+<script>
+const $ = id => document.getElementById(id);
+const today = () => new Date().toISOString().slice(0,10);
+const load = (key, fallback=[]) => {try{return JSON.parse(localStorage.getItem('nexus_'+key)) ?? fallback}catch{return fallback}};
+const state = {tasks:load('tasks'),habits:load('habits'),studies:load('studies'),workouts:load('workouts'),finance:load('finance'),projects:load('projects'),notes:load('notes')};
+function save(){Object.entries(state).forEach(([k,v])=>localStorage.setItem('nexus_'+k,JSON.stringify(v)));renderAll();if(window.nexusCloudSave)window.nexusCloudSave(state)}
+function id(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7)}
+function esc(s=''){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function money(n){return Number(n||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'})}
+function empty(msg){return `<div class="empty-state">${msg}</div>`}
+function showView(name){document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));$('view-'+name).classList.add('active');document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.view===name));if(name==='calendario')renderCalendar();window.scrollTo({top:0,behavior:'smooth'})}
+$('nav').addEventListener('click',e=>{const b=e.target.closest('[data-view]');if(b)showView(b.dataset.view)});
+$('todayText').textContent=new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+$('taskForm').addEventListener('submit',e=>{e.preventDefault();state.tasks.unshift({id:id(),title:$('taskTitle').value.trim(),date:$('taskDate').value,priority:$('taskPriority').value,done:false});e.target.reset();save()});
+$('habitForm').addEventListener('submit',e=>{e.preventDefault();state.habits.push({id:id(),title:$('habitTitle').value.trim(),days:{}});e.target.reset();save()});
+$('studyForm').addEventListener('submit',e=>{e.preventDefault();state.studies.unshift({id:id(),title:$('studySubject').value.trim(),duration:$('studyDuration').value,date:$('studyDate').value||today(),notes:$('studyNotes').value.trim()});e.target.reset();save()});
+$('workoutForm').addEventListener('submit',e=>{e.preventDefault();state.workouts.unshift({id:id(),title:$('workoutName').value.trim(),duration:$('workoutDuration').value,date:$('workoutDate').value||today(),notes:$('workoutNotes').value.trim()});e.target.reset();save()});
+$('financeForm').addEventListener('submit',e=>{e.preventDefault();state.finance.unshift({id:id(),title:$('financeTitle').value.trim(),amount:Number($('financeAmount').value),type:$('financeType').value,date:today()});e.target.reset();save()});
+$('projectForm').addEventListener('submit',e=>{e.preventDefault();state.projects.unshift({id:id(),title:$('projectTitle').value.trim(),description:$('projectDescription').value.trim(),done:false});e.target.reset();save()});
+$('noteForm').addEventListener('submit',e=>{e.preventDefault();state.notes.unshift({id:id(),title:$('noteTitle').value.trim(),content:$('noteContent').value.trim(),date:today()});e.target.reset();save()});
+function toggleTask(i){state.tasks[i].done=!state.tasks[i].done;save()}
+function toggleHabit(i){const d=today();state.habits[i].days[d]=!state.habits[i].days[d];save()}
+function removeItem(type,i){if(confirm('Excluir este item?')){state[type].splice(i,1);save()}}
+function taskHTML(t,i){return `<div class="task ${t.done?'done':''}"><input class="check" type="checkbox" ${t.done?'checked':''} onchange="toggleTask(${i})"><span class="task-name">${esc(t.title)}</span><small>${t.date?new Date(t.date+'T12:00:00').toLocaleDateString('pt-BR'):'Sem data'} · ${esc(t.priority||'Normal')}</small><button class="delete" title="Excluir" onclick="removeItem('tasks',${i})">×</button></div>`}
+function habitHTML(h,i){const done=!!h.days?.[today()];return `<div class="habit"><span class="habit-name">${esc(h.title)}</span><button onclick="toggleHabit(${i})">${done?'✓ Feito':'Marcar como feito'}</button><button class="delete" onclick="removeItem('habits',${i})">×</button></div>`}
+function projectHTML(p,i){return `<div class="project"><div style="flex:1;min-width:0"><strong style="font-size:12px">${esc(p.title)}</strong><div class="muted" style="margin-top:5px">${esc(p.description||'Sem descrição')}</div></div><span class="tag">${p.done?'Concluído':'Em andamento'}</span><button class="btn" onclick="state.projects[${i}].done=!state.projects[${i}].done;save()">Alterar</button><button class="delete" onclick="removeItem('projects',${i})">×</button></div>`}
+function noteHTML(n,i){return `<div class="note"><div style="flex:1;min-width:0"><strong style="font-size:12px">${esc(n.title)}</strong><div class="muted" style="margin-top:5px;white-space:pre-wrap">${esc(n.content)}</div><div class="muted" style="margin-top:7px">${new Date(n.date+'T12:00:00').toLocaleDateString('pt-BR')}</div></div><button class="delete" onclick="removeItem('notes',${i})">×</button></div>`}
+function recordHTML(x,i,type){return `<div class="entry"><div class="entry-main"><strong>${esc(x.title)}</strong><small>${x.date?new Date(x.date+'T12:00:00').toLocaleDateString('pt-BR'):''}${x.duration?' · '+esc(x.duration)+' min':''}${x.notes?' · '+esc(x.notes):''}</small></div><button class="delete" onclick="removeItem('${type}',${i})">×</button></div>`}
+function renderCalendar(){const d=new Date();const year=d.getFullYear(),month=calMonth;const first=new Date(year,month,1).getDay(),days=new Date(year,month+1,0).getDate();$('monthLabel').textContent=new Date(year,month,1).toLocaleDateString('pt-BR',{month:'long',year:'numeric'});let h=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'].map(x=>`<div class="day-label">${x}</div>`).join('');for(let i=0;i<first;i++)h+='<div class="day empty"></div>';for(let n=1;n<=days;n++){const date=`${year}-${String(month+1).padStart(2,'0')}-${String(n).padStart(2,'0')}`;const count=state.tasks.filter(t=>t.date===date).length;h+=`<div class="day ${date===today()?'today':''}"><strong>${n}</strong>${count?`<div class="tag" style="margin-top:8px">${count} tarefa(s)</div>`:''}</div>`}$('calendarGrid').innerHTML=h}
+let calMonth=new Date().getMonth();function changeMonth(n){calMonth+=n;if(calMonth<0){calMonth=11;/* keep current year view simple */}if(calMonth>11)calMonth=0;renderCalendar()}
+function renderAll(){
+  const pending=state.tasks.filter(t=>!t.done).length,done=state.habits.filter(h=>h.days?.[today()]).length;
+  $('statTasks').textContent=pending;$('statHabits').textContent=`${done}/${state.habits.length}`;$('statProjects').textContent=state.projects.filter(p=>!p.done).length;
+  const balance=state.finance.reduce((a,x)=>a+(x.type==='in'?x.amount:-x.amount),0);$('statBalance').textContent=money(balance);
+  $('dashboardTasks').innerHTML=state.tasks.filter(t=>!t.done).slice(0,5).map(t=>taskHTML(t,state.tasks.indexOf(t))).join('')||empty('Nenhuma tarefa pendente. Bom trabalho!');
+  $('allTasks').innerHTML=state.tasks.map(taskHTML).join('')||empty('Você ainda não adicionou tarefas.');
+  $('taskCount').textContent=`${pending} pendente(s)`;
+  $('dashboardHabits').innerHTML=state.habits.slice(0,5).map(habitHTML).join('')||empty('Adicione seus primeiros hábitos.');
+  $('allHabits').innerHTML=state.habits.map(habitHTML).join('')||empty('Nenhum hábito cadastrado.');
+  $('habitProgress').style.width=(state.habits.length?done/state.habits.length*100:0)+'%';
+  $('dashboardProjects').innerHTML=state.projects.filter(p=>!p.done).slice(0,4).map(p=>projectHTML(p,state.projects.indexOf(p))).join('')||empty('Nenhum projeto ativo.');
+  $('allProjects').innerHTML=state.projects.map(projectHTML).join('')||empty('Crie um projeto para começar.');
+  $('dashboardNotes').innerHTML=state.notes.slice(0,3).map(noteHTML).join('')||empty('Suas anotações aparecerão aqui.');
+  $('allNotes').innerHTML=state.notes.map(noteHTML).join('')||empty('Nenhuma anotação salva.');
+  $('studyList').innerHTML=state.studies.map((x,i)=>recordHTML(x,i,'studies')).join('')||empty('Nenhum estudo registrado.');
+  $('workoutList').innerHTML=state.workouts.map((x,i)=>recordHTML(x,i,'workouts')).join('')||empty('Nenhuma atividade registrada.');
+  const inc=state.finance.filter(x=>x.type==='in').reduce((a,x)=>a+x.amount,0),out=state.finance.filter(x=>x.type==='out').reduce((a,x)=>a+x.amount,0);
+  $('financeBalance').textContent=money(inc-out);$('financeIn').textContent=money(inc);$('financeOut').textContent=money(out);$('financeCount').textContent=state.finance.length;
+  $('financeList').innerHTML=state.finance.map((x,i)=>`<div class="entry"><div class="entry-main"><strong>${esc(x.title)}</strong><small>${new Date(x.date+'T12:00:00').toLocaleDateString('pt-BR')}</small></div><span class="amount ${x.type==='in'?'positive':'negative'}">${x.type==='in'?'+':'−'} ${money(x.amount)}</span><button class="delete" onclick="removeItem('finance',${i})">×</button></div>`).join('')||empty('Nenhuma movimentação registrada.');
+}
+function exportData(){const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='nexus-backup.json';a.click();URL.revokeObjectURL(a.href)}
+renderAll();
+</script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(() => {
+  const PROJECT_URL = 'https://lcpzngsivxvpymwllzsp.supabase.co';
+  const PUBLISHABLE_KEY = 'sb_publishable_rDUNSidLT4UbXnLRji5M7Q_iybIQm3i';
+  const client = window.supabase.createClient(PROJECT_URL, PUBLISHABLE_KEY, {
+    auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
+  });
+  const $id = (id) => document.getElementById(id);
+  const overlay = $id('authOverlay'), form = $id('authForm'), message = $id('authMessage');
+  let mode = 'login', currentUser = null, saveTimer = null, loadingCloud = false;
+  const keys = ['tasks','habits','studies','workouts','finance','projects','notes'];
+  const blank = () => ({tasks:[],habits:[],studies:[],workouts:[],finance:[],projects:[],notes:[]});
+  const localSnapshot = () => Object.fromEntries(keys.map(k => {try{return [k,JSON.parse(localStorage.getItem('nexus_'+k)||'[]')]}catch{return [k,[]]}}));
+  const hasLocalData = (d) => keys.some(k => Array.isArray(d[k]) && d[k].length > 0);
+  const setLocal = (d) => keys.forEach(k => localStorage.setItem('nexus_'+k,JSON.stringify(Array.isArray(d[k])?d[k]:[])));
+  const setMessage = (t, bad=false) => {message.textContent=t;message.style.color=bad?'#ff9999':'var(--green)'};
+  const showAuth = () => {overlay.classList.remove('auth-hidden');$id('signOutBtn').classList.add('auth-hidden');$id('accountEmail').textContent=''};
+  const hideAuth = () => {overlay.classList.add('auth-hidden');$id('signOutBtn').classList.remove('auth-hidden')};
+  function setMode(next){mode=next;const signup=mode==='signup';$id('authTitle').textContent=signup?'Criar sua conta':'Entre na sua conta';$id('authDescription').textContent=signup?'Crie sua conta para manter seus dados sincronizados.':'Acesse suas tarefas, hábitos, estudos e projetos de qualquer dispositivo.';$id('authName').classList.toggle('auth-hidden',!signup);$id('authName').required=signup;$id('authPassword').autocomplete=signup?'new-password':'current-password';$id('authSubmit').textContent=signup?'Criar conta':'Entrar';$id('showLogin').classList.toggle('primary',!signup);$id('showSignup').classList.toggle('primary',signup);$id('forgotPassword').classList.toggle('auth-hidden',signup);setMessage('')}
+  async function loadAccount(user){
+    loadingCloud=true;
+    const {data,error}=await client.from('nexus_data').select('data').eq('user_id',user.id).maybeSingle();
+    if(error){loadingCloud=false;throw error}
+    if(data && data.data){setLocal(data.data);Object.assign(state,data.data);}
+    else {
+      const local=localSnapshot();
+      if(hasLocalData(local) && confirm('Encontramos dados salvos neste navegador. Deseja importar esses dados para sua nova conta NEXUS?
+
+Clique em OK para importar ou Cancelar para começar vazio.')){
+        Object.assign(state,local);setLocal(local);
+      } else {Object.assign(state,blank());setLocal(state)}
+      const {error:insertError}=await client.from('nexus_data').insert({user_id:user.id,data:state});
+      if(insertError) throw insertError;
+    }
+    renderAll();loadingCloud=false;
+  }
+  window.nexusCloudSave = (data) => {
+    if(!currentUser || loadingCloud) return;
+    clearTimeout(saveTimer);
+    saveTimer=setTimeout(async()=>{
+      const {error}=await client.from('nexus_data').upsert({user_id:currentUser.id,data:data,updated_at:new Date().toISOString()},{onConflict:'user_id'});
+      if(error) console.error('Falha ao sincronizar NEXUS:',error);
+    },700);
+  };
+  async function activateSession(session){
+    if(!session){currentUser=null;showAuth();return}
+    currentUser=session.user;
+    try{await loadAccount(currentUser);$id('accountEmail').textContent=currentUser.email||'Conta conectada';hideAuth();}
+    catch(e){console.error(e);showAuth();setMessage('Não foi possível carregar seus dados: '+(e.message||'erro de conexão'),true)}
+  }
+  $id('showLogin').addEventListener('click',()=>setMode('login'));
+  $id('showSignup').addEventListener('click',()=>setMode('signup'));
+  form.addEventListener('submit',async(e)=>{
+    e.preventDefault();$id('authSubmit').disabled=true;setMessage('Aguarde...');
+    const email=$id('authEmail').value.trim(),password=$id('authPassword').value;
+    try{
+      if(mode==='signup'){
+        const name=$id('authName').value.trim();
+        const {data,error}=await client.auth.signUp({email,password,options:{data:{display_name:name},emailRedirectTo:location.origin+location.pathname}});
+        if(error) throw error;
+        if(data.session) await activateSession(data.session); else setMessage('Cadastro criado! Confira seu e-mail e clique no link de confirmação para ativar sua conta.');
+      } else {
+        const {data,error}=await client.auth.signInWithPassword({email,password});
+        if(error) throw error;
+        await activateSession(data.session);
+      }
+    }catch(err){setMessage(err.message||'Não foi possível concluir. Tente novamente.',true)}
+    finally{$id('authSubmit').disabled=false}
+  });
+  $id('forgotPassword').addEventListener('click',async()=>{
+    const email=$id('authEmail').value.trim();
+    if(!email){setMessage('Digite seu e-mail primeiro.',true);return}
+    const {error}=await client.auth.resetPasswordForEmail(email,{redirectTo:location.origin+location.pathname});
+    setMessage(error?error.message:'Se o endereço estiver cadastrado, você receberá um e-mail para redefinir a senha.',!!error);
+  });
+  $id('signOutBtn').addEventListener('click',async()=>{if(confirm('Deseja sair da sua conta?')){await client.auth.signOut();location.reload()}});
+  client.auth.onAuthStateChange((event,session)=>{if(event==='SIGNED_IN'||event==='INITIAL_SESSION'||event==='PASSWORD_RECOVERY')activateSession(session)});
+  setMode('login');
+})();
+</script>
+
+<script>
+  // Registra o modo PWA para permitir instalação e cache básico.
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("./service-worker.js", { scope: "./" })
+        .catch((error) => console.error("Não foi possível ativar o modo offline do NEXUS:", error));
+    });
+  }
+</script>
+
+</body>
+</html>
